@@ -32,17 +32,14 @@ At a high level:
 
 Each `fold_x/` directory follows the same naming pattern (extension is `.csv` under `folds_csv/`, and `.tsv` under `folds_tsv*/`):
 
-- Test set (early-stage PD benchmark):
-	- `test_early6PD6HC.*`
-	- (Some folds also include other test lists, e.g. `test_all6PD6HC.*`.)
+- Test set:
+	- `test_early6PD6HC.*` (early-stage PD benchmark)
+	- `test_all6PD6HC.*` (all-stage PD test set)
 
-- Train+validation combined list (fold-level):
-	- `train_and_val.*`
-	- This is the full list for that fold before splitting into train/validation.
 
 - Train/validation split (inside the subfolder):
 	- `train_and_val/`
-		- `train.*`
+		- `train.*` (AllPD setting in the paper: the full set of PD speakers across all stages from the benchmark datasets)
 		- validation lists such as `val_early6PD6HC.*` and `val_all6PD6HC.*`
 
 ### Split groups (tasks)
@@ -54,12 +51,12 @@ Single-task training lists used in the benchmark paper experiments:
 
 - `folds_tsv_SENTENCES/`
 - `folds_tsv_DDK_ANALYSIS_PATAKA/`
-- `folds_tsv_SUSTAINED-VOWELS/`
+- `folds_tsv_SUSTAINED-VOWELS_onlyA123/`
 
-Additional variants:
+For these three single-task split groups, the `train_and_val/` folder also includes:
 
-- `folds_tsv_DDK_ANALYSIS/` (broader DDK sets)
-- `folds_tsv_SUSTAINED-VOWELS_onlyA123/` (restricted vowel subset)
+- `train_allPDsubset.tsv` (AllPD-subset introduced in the paper: a distribution-matched subset of AllPD)
+- `train_earlybalance.tsv` (EarlyPD setting: the full set of EarlyPD speakers from the benchmark datasets)
 
 ---
 
