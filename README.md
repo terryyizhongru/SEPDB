@@ -58,5 +58,21 @@ For these three single-task split groups, the `train_and_val/` folder also inclu
 - `train_allPDsubset.tsv` (AllPD-subset introduced in the paper: a distribution-matched subset of AllPD)
 - `train_earlybalance.tsv` (EarlyPD setting: the full set of EarlyPD speakers from the benchmark datasets)
 
+## Preprocessing
+
+Use the helper scripts in `preprocess_scripts/` to normalize raw NeuroVoz/PC-GITA audios before running any benchmark experiments. Provide `$DATASET_DIR` as the parent containing the source downloads and target root for the reorganized files.
+
+1. Rename and copy NeuroVoz audio files:
+
+```
+python3 preprocess_scripts/rename_audios_neurovoz.py $DATASET_DIR/neurovoz_v3/audios $DATASET_DIR/NeuroVoz_PCGITA/neurovoz_data/audios
+```
+
+2. Restructure and rename PC-GITA audio files:
+
+```
+python3 preprocess_scripts/rename_restruct_gita.py --data-dir $DATASET_DIR/PC-GITA/ --new-data-dir $DATASET_DIR/NeuroVoz_PCGITA/pcgita_data/audios
+```
+
 ---
 

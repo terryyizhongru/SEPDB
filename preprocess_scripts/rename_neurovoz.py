@@ -8,7 +8,7 @@ Script to rename NeuroVoz audio files according to specific rules:
 5. Reorder filename format from Group_Task_Detail_ID to Group_Task_ID_Detail
 """
 
-import os
+import argparse
 import re
 import shutil
 from pathlib import Path
@@ -102,7 +102,7 @@ def reorder_filename_parts(filename):
     
     return filename  # No 4-digit ID found, return original
 
-def rename_neurovoz_files(audio_dir):
+def rename_neurovoz_files(audio_dir, new_data_dir=None):
     """
     Rename audio files in the given directory according to the specified rules.
     """
@@ -117,6 +117,15 @@ def rename_neurovoz_files(audio_dir):
     print(f"Found {len(wav_files)} WAV files to process")
     
     renamed_count = 0
+
+    in_place = False
+    if new_data_dir:
+        target_path = Path(new_data_dir)
+        target_path.mkdir(parents=True, exist_ok=True)
+        print(f"Writing renamed files to: {target_path}")
+    else:
+        target_path = audio_path
+        in_place = True
     
     for wav_file in wav_files:
         old_name = wav_file.name
@@ -136,7 +145,7 @@ def rename_neurovoz_files(audio_dir):
         # Only rename if name changed
         if new_name != old_name:
             old_path = wav_file
-            new_path = audio_path / new_name
+            new_path = target_path / new_name
             
             # Check if target file already exists
             if new_path.exists():
@@ -144,7 +153,10 @@ def rename_neurovoz_files(audio_dir):
                 continue
             
             try:
-                old_path.rename(new_path)
+                if in_place:
+                    old_path.rename(new_path)
+                else:
+                    shutil.copy2(old_path, new_path)
                 print(f"✅ Final: {old_name} -> {new_name}")
                 renamed_count += 1
             except Exception as e:
@@ -212,37 +224,29 @@ def preview_changes(audio_dir):
     print(f"\nTotal: {total_changes} files would be renamed out of {len(wav_files)} files.")
 
 if __name__ == "__main__":
-    import sys
-    
-    # Default directory
-    audio_dir = "/home/yzhong/data/storage1t/NeuroVoz/data/audios"
-    
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--preview":
-            preview_changes(audio_dir)
-        elif sys.argv[1] == "--help":
-            print("Usage:")
-            print("  python rename_audios.py          # Rename files")
-            print("  python rename_audios.py --preview # Preview changes")
-            print("  python rename_audios.py --help    # Show this help")
-        else:
-            audio_dir = sys.argv[1]
-            rename_neurovoz_files(audio_dir)
+    parser = argparse.ArgumentParser(description="Rename NeuroVoz audio files")
+    parser.add_argument(
+        "--data-dir",
+        default="/home/yzhong/data/storage1t/NeuroVoz/data/audios",
+        help="Source path that contains the original WAV files",
+    )
+    parser.add_argument(
+        "--new-data-dir",
+        help="Destination directory where renamed WAV files are written",
+    )
+    parser.add_argument(
+        "--preview",
+        action="store_true",
+        help="Show potential changes without touching any files",
+    )
+
+    args = parser.parse_args()
+
+    if args.preview:
+        preview_changes(args.data_dir)
     else:
-        # Ask for confirmation before renaming
-        print(f"About to rename files in: {audio_dir}")
-        response = input("Do you want to preview changes first? (y/n): ").strip().lower()
-        
-        if response == 'y':
-            preview_changes(audio_dir)
-            response = input("\nProceed with renaming? (y/n): ").strip().lower()
-            if response == 'y':
-                rename_neurovoz_files(audio_dir)
-            else:
-                print("Renaming cancelled.")
+        if args.new_data_dir:
+            rename_neurovoz_files(args.data_dir, args.new_data_dir)
         else:
-            response = input("Proceed with renaming? (y/n): ").strip().lower()
-            if response == 'y':
-                rename_neurovoz_files(audio_dir)
-            else:
-                print("Renaming cancelled.")
+            print("No --new-data-dir provided; renaming files in place (legacy behavior)")
+            rename_neurovoz_files(args.data_dir)
