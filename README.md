@@ -7,7 +7,8 @@ This repository contains the official benchmark splits and evaluation protocols 
 
 ## Latest Updates
 - **Benchmark splits:** Speaker-independent, standardized splits are available in `benchmark_splits/`.
-- **Evaluation scripts:** Work in progress; code will be released/cleaned up.
+- **Preprocess scripts:** Work in progress; code will be released/cleaned up.
+- **Evaluation scripts:** code will be released/cleaned up.
 
 ---
 
@@ -62,16 +63,18 @@ For these three single-task split groups, the `train_and_val/` folder also inclu
 
 Use the helper scripts in `preprocess_scripts/` to normalize raw NeuroVoz/PC-GITA audios before running any benchmark experiments. Provide `$DATASET_DIR` as the parent containing the source downloads and target root for the reorganized files.
 
-1. Rename and copy NeuroVoz audio files:
+1. Rename and reorganize both datasets into `NeuroVoz_PCGITA` (the destination tree used by the benchmark):
 
 ```
-python3 preprocess_scripts/rename_audios_neurovoz.py $DATASET_DIR/neurovoz_v3/audios $DATASET_DIR/NeuroVoz_PCGITA/neurovoz_data/audios
-```
-
-2. Restructure and rename PC-GITA audio files:
-
-```
+python3 preprocess_scripts/rename_neurovoz.py $DATASET_DIR/neurovoz_v3/audios $DATASET_DIR/NeuroVoz_PCGITA/neurovoz_data/audios
 python3 preprocess_scripts/rename_restruct_gita.py --data-dir $DATASET_DIR/PC-GITA/ --new-data-dir $DATASET_DIR/NeuroVoz_PCGITA/pcgita_data/audios
+```
+
+2. Downsample and normalize the reorganized WAVs (default output goes into each `<wav-dir>/audios_fortrain`):
+
+```
+python3 preprocess_scripts/wav_preprocessing.py --wav-dir $DATASET_DIR/NeuroVoz_PCGITA/pcgita_data/audios
+python3 preprocess_scripts/wav_preprocessing.py --wav-dir $DATASET_DIR/NeuroVoz_PCGITA/neurovoz_data/audios
 ```
 
 ---
