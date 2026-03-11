@@ -1,4 +1,4 @@
-# Benchmark for Speech-based Early-stage Parkinson's Disease Detection
+# A Benchmark for Early-stage Parkinson's Disease Detection from Speech
 
 This repository contains the official benchmark splits and evaluation protocols for the paper:  
 **"A Benchmark for Early-stage Parkinson's Disease Detection from Speech"**
